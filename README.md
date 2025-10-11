@@ -34,3 +34,34 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# Set up guide
+
+### To create Next Repo
+1. `npx create-next-app@latest .`
+### To initialize the Hardhat ( VERSION 2 OLD)
+2. `npx hardhat --init`
+### Add Extra dependencies
+3. add extra dependencies as per your requirements.(OpenZepplin...)
+### To compile the solidity Code!
+4. `npx hardhat compile`
+### To deploy The Contracts on the network 
+5. `npx hardhat run scripts/deploy.js --network ganache`  if Other network Use megaeth, localhost, sepolia etc.
+### This is most important to run the blockChain on the node (Self BlockChain on the db).
+6. `npx ganache --wallet.seed "metamarket" --db ./ganache-data --port 8545`. here "metamarket" is the mnemonic yu can use different one!
+- this will create the private keys of (100ETH each use in the Metamask for Transactions)
+details of the Ganache Network
+
+| Field                  | Value / Instruction               |
+| ---------------------- | --------------------------------- |
+| **Network Name**       | Ganache Localhost 8585            |
+| **New RPC URL**        | `http://127.0.0.1:8585`           |
+| **Chain ID**           | `1337` (default Ganache chain ID) |
+| **Currency Symbol**    | ETH                     |
+| **Block Explorer URL** | Leave empty (optional)            |
+
+
+
+# Happy BlockChain Verse 🤝 
+
+

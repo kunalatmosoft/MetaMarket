@@ -1,4 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Metamarket
+
+Metamarket is a decentralized prediction market platform built with [Next.js](https://nextjs.org) and [Hardhat](https://hardhat.org). Users can create, participate, and resolve markets using blockchain technology. It supports real-time tracking of bets, smart contract-based transactions, and local blockchain development using Ganache.
+
+---
+
+## Features
+
+- ✅ **Create Markets** – Users can create prediction markets with custom questions and resolution sources.  
+- ✅ **Place Bets** – Participate by betting on "Yes" or "No" outcomes using ETH.  
+- ✅ **Real-time Updates** – Market shares and user positions are updated instantly.  
+- ✅ **Resolve Markets** – Market creators can resolve markets after the resolution date.  
+- ✅ **User Dashboard** – View your current bets, total positions, and claim payouts for resolved markets.  
+- ✅ **Local Blockchain Support** – Fully compatible with Ganache for testing and local development.  
+- ✅ **Recharts Integration** – Visualize market trends with real-time charts.  
+- ✅ **Persistence** – Market data is stored locally for instant reloads and offline testing.
+
+---
 
 ## Getting Started
 
@@ -15,53 +32,103 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start editing the page by modifying `app/page.js`. The page auto-updates as you edit.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a modern font family by Vercel.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+├─ app/              # Next.js pages and components
+├─ components/       # UI components (MarketCard, BetDrawer, etc.)
+├─ scripts/          # Hardhat deployment scripts
+├─ lib/              # Helper functions (contract interaction)
+├─ ganache-data/     # Ganache blockchain DB
+├─ package.json
+└─ README.md
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Installation & Setup Guide
 
-## Deploy on Vercel
+### 1. Create Next.js Project
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx create-next-app@latest .
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. Initialize Hardhat
 
-# Set up guide
+```bash
+npx hardhat --init
+```
 
-### To create Next Repo
-1. `npx create-next-app@latest .`
-### To initialize the Hardhat ( VERSION 2 OLD)
-2. `npx hardhat --init`
-### Add Extra dependencies
-3. add extra dependencies as per your requirements.(OpenZepplin...)
-### To compile the solidity Code!
-4. `npx hardhat compile`
-### To deploy The Contracts on the network 
-5. `npx hardhat run scripts/deploy.js --network ganache`  if Other network Use megaeth, localhost, sepolia etc.
-### This is most important to run the blockChain on the node (Self BlockChain on the db).
-6. `npx ganache --wallet.seed "metamarket" --db ./ganache-data --port 8545`. here "metamarket" is the mnemonic yu can use different one!
-- this will create the private keys of (100ETH each use in the Metamask for Transactions)
-details of the Ganache Network
+### 3. Install Dependencies
+
+Add any extra dependencies as needed (e.g., OpenZeppelin).
+
+### 4. Compile Solidity Contracts
+
+```bash
+npx hardhat compile
+```
+
+### 5. Deploy Contracts to a Network
+
+```bash
+npx hardhat run scripts/deploy.js --network ganache
+```
+
+> Replace `ganache` with `localhost`, `sepolia`, `megaeth`, or other networks as needed.
+
+### 6. Start Ganache Local Blockchain
+
+```bash
+npx ganache --wallet.seed "metamarket" --db ./ganache-data --port 8585
+```
+
+> "metamarket" is the mnemonic; you can use a different one.
+> This creates 100 ETH wallets for testing in Metamask.
+
+---
+
+## Ganache Network Details for Metamask
 
 | Field                  | Value / Instruction               |
 | ---------------------- | --------------------------------- |
 | **Network Name**       | Ganache Localhost 8585            |
 | **New RPC URL**        | `http://127.0.0.1:8585`           |
 | **Chain ID**           | `1337` (default Ganache chain ID) |
-| **Currency Symbol**    | ETH                     |
+| **Currency Symbol**    | ETH                               |
 | **Block Explorer URL** | Leave empty (optional)            |
 
+---
 
+## Learn More
 
-# Happy BlockChain Verse 🤝 
+To learn more about the frameworks and tools used:
 
+* [Next.js Documentation](https://nextjs.org/docs) – Learn about Next.js features and API.
+* [Hardhat Documentation](https://hardhat.org/getting-started/) – Learn about smart contract development.
+* [Ganache Documentation](https://trufflesuite.com/ganache/) – For local blockchain testing.
+* [OpenZeppelin](https://openzeppelin.com/contracts/) – For secure smart contract standards.
 
+---
+
+## Security & Best Practices
+
+* Never expose private keys or mnemonic phrases in the repository.
+* Use Ganache local blockchain for testing instead of real funds.
+* Keep dependencies updated and monitor for vulnerabilities.
+* Always validate user inputs before interacting with smart contracts.
+
+---
+
+# Happy Blockchain Verse 🤝
+
+Metamarket combines decentralized finance, prediction markets, and modern web development for a complete Web3 experience.
+
+---

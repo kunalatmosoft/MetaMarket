@@ -1,6 +1,7 @@
 {
   "title": "Deployed Contracts of Projects",
   "contracts": {
-    "MetaMarket": "0x38fb23A49FD1976f2D8Dddf2a283D4CFB07b1e6c"
+    "MetaMarket": "0x38fb23A49FD1976f2D8Dddf2a283D4CFB07b1e6c",
+    "CrowdFunding": "0xbc6c556fA0fB5f90d887eDF80628281219BdE91A"
   }
 }

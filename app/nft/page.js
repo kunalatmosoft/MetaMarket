@@ -29,6 +29,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 
 // Mock data
 const earningsData = [
@@ -40,17 +43,16 @@ const earningsData = [
   { name: "Jun", value: 300 },
 ]
 
-const portfolioData = [
-  { name: "PFP NFTs", value: 40 },
-  { name: "Art NFTs", value: 25 },
-  { name: "Gaming NFTs", value: 20 },
-  { name: "Music NFTs", value: 15 },
-]
-
-const COLORS = ["#3b82f6", "#f59e0b", "#10b981", "#a855f7"]
+const COLORS = ["#3b82f6", "#f59e0b", "#10b981", "#a855f7", "#ef4444", "#6366f1"]
 
 export default function DashboardPage() {
   const [nfts, setNfts] = useState([])
+  const [portfolioData, setPortfolioData] = useState([])
+  const [transactions, setTransactions] = useState([
+    { name: "Cyber Ape #102", type: "Sold", amount: "2.4 ETH", date: "2025-10-10" },
+    { name: "NeoPunk #45", type: "Bought", amount: "1.1 ETH", date: "2025-10-09" },
+    { name: "Meta Tiger #8", type: "Minted", amount: "0.5 ETH", date: "2025-10-08" },
+  ])
   const [walletConnected, setWalletConnected] = useState(false)
   const [walletAddress, setWalletAddress] = useState("")
   const [loading, setLoading] = useState(true)
@@ -59,13 +61,14 @@ export default function DashboardPage() {
   const [selectedNFT, setSelectedNFT] = useState(null)
   const [filterType, setFilterType] = useState("All")
   const [totalValue, setTotalValue] = useState(0)
-
-  // Mock transaction data
-  const transactions = [
-    { name: "Cyber Ape #102", type: "Sold", amount: "2.4 ETH", date: "2025-10-10" },
-    { name: "NeoPunk #45", type: "Bought", amount: "1.1 ETH", date: "2025-10-09" },
-    { name: "Meta Tiger #8", type: "Minted", amount: "0.5 ETH", date: "2025-10-08" },
-  ]
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [newNFT, setNewNFT] = useState({
+    name: "",
+    description: "",
+    price: "",
+    image: "",
+    attributes: { rarity: "", category: "" },
+  })
 
   useEffect(() => {
     // Load theme from localStorage
@@ -84,9 +87,6 @@ export default function DashboardPage() {
           { id: 3, name: "Meta Tiger #8", price: 3.5, image: "https://picsum.photos/300?3", description: "A majestic Meta Tiger with unique stripes.", attributes: { rarity: "Legendary", category: "Gaming" } },
         ]
         setNfts(mockNfts)
-        // Calculate total portfolio value
-        const total = mockNfts.reduce((sum, nft) => sum + nft.price, 0)
-        setTotalValue(total.toFixed(2))
         setLoading(false)
       } catch (err) {
         setError("Failed to load NFTs")
@@ -109,9 +109,17 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    // Recalculate total value when NFT prices change
-    const total = nfts.reduce((sum, nft) => sum + parseFloat(nft.price), 0)
+    // Recalculate total value and portfolio data when NFTs change
+    const total = nfts.reduce((sum, nft) => sum + parseFloat(nft.price || 0), 0)
     setTotalValue(total.toFixed(2))
+
+    const categories = nfts.reduce((acc, nft) => {
+      const cat = nft.attributes.category || "Other"
+      acc[cat] = (acc[cat] || 0) + parseFloat(nft.price || 0)
+      return acc
+    }, {})
+    const newPortfolio = Object.keys(categories).map(cat => ({ name: `${cat} NFTs`, value: categories[cat] }))
+    setPortfolioData(newPortfolio)
   }, [nfts])
 
   const connectWallet = async () => {
@@ -136,6 +144,56 @@ export default function DashboardPage() {
     setTheme(newTheme)
     localStorage.setItem("theme", newTheme)
     document.documentElement.classList.toggle("dark", newTheme === "dark")
+  }
+
+const generateUniqueId = () => {
+  return nfts.length > 0 ? Math.max(...nfts.map(n => n.id)) + 1 : 1;
+};
+
+const handleAddSubmit = e => {
+  e.preventDefault();
+  const image = newNFT.image || `https://picsum.photos/300?${Date.now()}`;
+  const price = parseFloat(newNFT.price) || 0;
+  const addedNFT = {
+    id: generateUniqueId(),
+    ...newNFT,
+    price,
+    image,
+  };
+  setNfts([...nfts, addedNFT]);
+  setTransactions([
+    {
+      name: addedNFT.name,
+      type: "Minted",
+      amount: `${price.toFixed(2)} ETH`,
+      date: new Date().toISOString().split("T")[0],
+    },
+    ...transactions,
+  ]);
+  setIsAddModalOpen(false);
+  setNewNFT({
+    name: "",
+    description: "",
+    price: "",
+    image: "",
+    attributes: { rarity: "", category: "" },
+  });
+};
+
+  const handleDeleteNFT = () => {
+    if (selectedNFT) {
+      setNfts(nfts.filter(n => n.id !== selectedNFT.id))
+      setTransactions([
+        {
+          name: selectedNFT.name,
+          type: "Burned",
+          amount: `${selectedNFT.price.toFixed(2)} ETH`,
+          date: new Date().toISOString().split("T")[0],
+        },
+        ...transactions,
+      ])
+      setSelectedNFT(null)
+    }
   }
 
   const filteredTransactions = filterType === "All" ? transactions : transactions.filter(tx => tx.type === filterType)
@@ -249,6 +307,7 @@ export default function DashboardPage() {
               <option value="Sold">Sold</option>
               <option value="Bought">Bought</option>
               <option value="Minted">Minted</option>
+              <option value="Burned">Burned</option>
             </select>
           </div>
           <table className="w-full text-left border-t border-gray-100 dark:border-gray-700">
@@ -269,6 +328,8 @@ export default function DashboardPage() {
                       <ArrowUpRight className="text-green-500 w-4 h-4" />
                     ) : tx.type === "Bought" ? (
                       <ArrowDownRight className="text-red-500 w-4 h-4" />
+                    ) : tx.type === "Burned" ? (
+                      <ArrowDownRight className="text-red-500 w-4 h-4" />
                     ) : (
                       <Zap className="text-yellow-500 w-4 h-4" />
                     )}
@@ -285,7 +346,10 @@ export default function DashboardPage() {
 
       {/* NFT Market Trends */}
       <section>
-        <h2 className="text-lg sm:text-xl font-semibold mb-4">Trending NFTs</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold">Trending NFTs</h2>
+          <Button onClick={() => setIsAddModalOpen(true)}>Add NFT</Button>
+        </div>
         {loading ? (
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
@@ -331,11 +395,104 @@ export default function DashboardPage() {
                 <p>Rarity: {selectedNFT.attributes.rarity}</p>
                 <p>Category: {selectedNFT.attributes.category}</p>
               </div>
-              <Button variant="outline" onClick={() => setSelectedNFT(null)}>
-                Close
-              </Button>
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={() => setSelectedNFT(null)}>
+                  Close
+                </Button>
+                <Button variant="destructive" onClick={handleDeleteNFT}>
+                  Delete
+                </Button>
+              </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add NFT Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="bg-white dark:bg-gray-800">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 dark:text-gray-100">Add New NFT</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={newNFT.name}
+                onChange={e => setNewNFT({ ...newNFT, name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={newNFT.description}
+                onChange={e => setNewNFT({ ...newNFT, description: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="price">Price (ETH)</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                value={newNFT.price}
+                onChange={e => setNewNFT({ ...newNFT, price: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="rarity">Rarity</Label>
+              <Select
+                onValueChange={val =>
+                  setNewNFT({ ...newNFT, attributes: { ...newNFT.attributes, rarity: val } })
+                }
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select rarity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Common">Common</SelectItem>
+                  <SelectItem value="Rare">Rare</SelectItem>
+                  <SelectItem value="Epic">Epic</SelectItem>
+                  <SelectItem value="Legendary">Legendary</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <Select
+                onValueChange={val =>
+                  setNewNFT({ ...newNFT, attributes: { ...newNFT.attributes, category: val } })
+                }
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PFP">PFP</SelectItem>
+                  <SelectItem value="Art">Art</SelectItem>
+                  <SelectItem value="Gaming">Gaming</SelectItem>
+                  <SelectItem value="Music">Music</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="image">Image URL (optional, leave blank to generate)</Label>
+              <Input
+                id="image"
+                value={newNFT.image}
+                onChange={e => setNewNFT({ ...newNFT, image: e.target.value })}
+                placeholder="Leave blank to generate"
+              />
+            </div>
+            <Button type="submit">Add NFT</Button>
+          </form>
         </DialogContent>
       </Dialog>
     </main>

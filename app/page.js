@@ -48,9 +48,9 @@ export default function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" className="group bg-blue-500 hover:scale-105 transition-all duration-300">
-              <Link href="/nft">
+              <Link href="/crowdfunding">
                 <Aperture className="w-5 h-5 mr-2" />
-                Browse Nft's
+                Crowd Fundings
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </Button>
@@ -224,7 +224,7 @@ export default function Home() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="hover:scale-105 transition-all duration-300">
-                  <Link href="/markets/create">Create Your First Market</Link>
+                  <Link href="/nft">Browse Nft's</Link>
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "2s" }}>
